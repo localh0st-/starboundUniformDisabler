@@ -2,6 +2,13 @@ require("/npcs/jobOffersCompat.lua")
 function tenant.setNpcType(npcType)
   if npc.npcType() == npcType then return end
 
+  if npcType=="crewmembertailor" then
+     npcType={"crewmember", "crewmember", "crewmember", "crewmember", "crewmemberchemistblue", "crewmemberchemistgreen",
+	 "crewmemberchemistyellow", "crewmemberchemistorange", "crewmemberengineer", "crewmemberengineer", "crewmemberengineer",
+	 "crewmemberengineer", "crewmembermechanic", "crewmembermechanic", "crewmembermechanic", "crewmembermechanic", "crewmembermedic",
+	 "crewmembermedic", "crewmembermedic", "crewmembermedic", "crewmemberjanitor", "crewmemberjanitor", "crewmemberjanitor", "crewmemberjanitor"}
+	 npcType = npcType[math.random(#npcType)]
+  end
   npc.resetLounging()
   storage.itemSlots = storage.itemSlots or {}
   if not storage.itemSlots.headCosmetic and not storage.itemSlots.headCosmetic then

@@ -1,4 +1,5 @@
 require("/npcs/jobOffersCompat.lua")
+require("/npcs/noTailor.lua")
 function tenant.setNpcType(npcType)
   if npc.npcType() == npcType then return end
 

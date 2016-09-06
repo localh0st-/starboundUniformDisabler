@@ -16,8 +16,6 @@ function tenant.setNpcType(npcType)
   storage.itemSlots.chest = (npc.getItemSlot("chest") or "")
   storage.itemSlots.legs = (npc.getItemSlot("legs") or "")
   storage.itemSlots.back = (npc.getItemSlot("back") or "")
-  storage.original = {}
-  storage.original = storage.itemSlots
 
   storage.itemSlots.primary = nil
   storage.itemSlots.alt = nil
@@ -55,52 +53,6 @@ function tenant.setNpcType(npcType)
   end
 end
 
-function recruitable.init()
-  message.setHandler("recruit.beamOut", simpleHandler(recruitable.beamOut))
-  message.setHandler("recruit.status", simpleHandler(recruitable.updateStatus))
-  message.setHandler("recruit.confirmRecruitment", simpleHandler(recruitable.confirmRecruitment))
-  message.setHandler("recruit.declineRecruitment", simpleHandler(recruitable.declineRecruitment))
-  message.setHandler("recruit.confirmFollow", simpleHandler(recruitable.confirmFollow))
-  message.setHandler("recruit.confirmUnfollow", simpleHandler(recruitable.confirmUnfollow))
-  message.setHandler("recruit.confirmUnfollowBehavior", simpleHandler(recruitable.confirmUnfollowBehavior))
-  message.setHandler("recruit.setUniform", simpleHandler(recruitable.setUniform))
-  message.setHandler("recruit.interactBehavior", simpleHandler(setInteracted))
-  message.setHandler("recruit.setItemMobius", simpleHandler(recruitable.setItemMobius))
-
-  local initialStatus = config.getParameter("initialStatus")
-  if initialStatus then
-    setCurrentStatus(initialStatus, "crew")
-  end
-
-  local personality = config.getParameter("personality")
-  if personality then
-    setPersonality(personality)
-  end
-
-  if storage.followingOwner == nil then
-    storage.followingOwner = true
-  end
-  if storage.behaviorFollowing == nil then
-    storage.behaviorFollowing = true
-  end
-
-  if recruitable.ownerUuid() or recruitable.isRecruitable() then
-    recruitable.setUniform(storage.crewUniform or config.getParameter("crew.uniform"))
-  end
-
-  if recruitable.ownerUuid() then
-    if not storage.beamedIn then
-      status.addEphemeralEffect("beamin")
-      storage.beamedIn = true
-    end
-    if storage.followingOwner then
-      recruitable.confirmFollow(true)
-    else
-      recruitable.confirmUnfollow(true)
-    end
-  end
-end
-
 function recruitable.dyeUniformItem(item)
   return item
 end
@@ -117,12 +69,4 @@ function recruitable.setUniform(uniform)
   end
 
   recruitable.portraitChanged = true
-end
-
-function recruitable.setItemMobius(clothes)
-	if not clothes then
-		storage.itemSlots = storage.original
-	else
-		storage.itemSlots = clothes
-	end
 end

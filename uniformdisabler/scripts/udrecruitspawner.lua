@@ -14,6 +14,5 @@ function Recruit:toJson()
   local json = oldToJson(self)
   json.original=self.original
   json.customUniform = self.customUniform
-  sb.logWarn("%s",json.original)
   return json
 end

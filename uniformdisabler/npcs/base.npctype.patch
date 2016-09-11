@@ -3,5 +3,10 @@
     "op": "add",
     "path": "/scripts/-",
     "value": "/npcs/uniformDisabler.lua"
+  },
+  {
+    "op": "add",
+    "path": "/scripts/-",
+    "value": "/scripts/udrecruitable.lua"
   }
 ]

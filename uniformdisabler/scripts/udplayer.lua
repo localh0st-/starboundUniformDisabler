@@ -5,30 +5,32 @@ function offerUniformUpdate(recruitUuid, entityId)
   if not recruit then return end
 
   if not recruitSpawner.customUniform then
-    local dialogConfig = createConfirmationDialog("/interface/confirmation/setuniformconfirmation.config", recruit)
+    local dialogConfig = createConfirmationDialog("/interface/confirmation/disableuniformconfirmation.config", recruit)
     dialogConfig.sourceEntityId = entityId
     dialogConfig.images.portrait = world.entityPortrait(entity.id(), "full")
     promises:add(player.confirm(dialogConfig), function (choice)
         if choice then
           updateCustomUniform()
-        end
+        else
+		  resetCustomUniform()
+		end
       end)
-  else
-    local dialogConfig = createConfirmationDialog("/interface/confirmation/resetuniformconfirmation.config", recruit)
-    dialogConfig.sourceEntityId = entityId
-    dialogConfig.images.portrait = world.entityPortrait(entity.id(), "full")
-    promises:add(player.confirm(dialogConfig), function (choice)
-        if choice then
-          resetCustomUniform()
-        end
-      end)
-  end
+	end
 end
 
 function resetCustomUniform()
-  sb.logInfo("foo")
+  local minions=playerCompanions.getCompanions("crew")
+  sb.logWarn("%s",minions[1]["uniqueId"])
+  for _,member in pairs(minions) do
+    world.sendEntityMessage(member["uniqueId"],"recruit.homeClothes")
+  end
 end
 
 function updateCustomUniform()
-  sb.logInfo("bar")
+  local minions=playerCompanions.getCompanions("crew")
+  --sb.logWarn("%s",minions[1]["uniqueId"])
+  for _,member in pairs(minions) do
+    sb.logWarn("%s",member["uniqueId"])
+    world.sendEntityMessage(member["uniqueId"],"recruit.forcedClothes")
+  end
 end

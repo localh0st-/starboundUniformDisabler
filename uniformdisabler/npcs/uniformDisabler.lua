@@ -19,7 +19,7 @@ function tenant.setNpcType(npcType)
 
   storage.itemSlots.primary = nil
   storage.itemSlots.alt = nil
-  storage.original=storage.itemSlots
+
   local newUniqueId = sb.makeUuid()
   local newEntityId = world.spawnNpc(entity.position(), npc.species(), npcType, npc.level(), npc.seed(), {
     identity = npc.humanoidIdentity(),

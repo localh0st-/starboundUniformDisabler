@@ -19,18 +19,30 @@ function offerUniformUpdate(recruitUuid, entityId)
 end
 
 function resetCustomUniform()
-  local minions=playerCompanions.getCompanions("crew")
-  sb.logWarn("%s",minions[1]["uniqueId"])
-  for _,member in pairs(minions) do
+  local myMinions=playerCompanions.getCompanions("followers")
+  local lazyMinions=playerCompanions.getCompanions("shipCrew")
+  sb.logWarn("%s","reset uniform")
+  for _, member in pairs(myMinions) do
     world.sendEntityMessage(member["uniqueId"],"recruit.homeClothes")
   end
+  for _, member in pairs(lazyMinions) do
+    world.sendEntityMessage(member["uniqueId"],"recruit.homeClothes")
+  end
+  recruitSpawner:markDirty()
+--  for _,member in pairs(minions) do
+--    world.sendEntityMessage(member["uniqueId"],"recruit.homeClothes")
+--  end
 end
 
 function updateCustomUniform()
-  local minions=playerCompanions.getCompanions("crew")
-  --sb.logWarn("%s",minions[1]["uniqueId"])
-  for _,member in pairs(minions) do
-    sb.logWarn("%s",member["uniqueId"])
+  local myMinions=playerCompanions.getCompanions("followers")
+  local lazyMinions=playerCompanions.getCompanions("shipCrew")
+  sb.logWarn("%s","assign uniform")
+  for _, member in pairs(myMinions) do
     world.sendEntityMessage(member["uniqueId"],"recruit.forcedClothes")
   end
+  for _, member in pairs(lazyMinions) do
+    world.sendEntityMessage(member["uniqueId"],"recruit.forcedClothes")
+  end
+  recruitSpawner:markDirty()
 end

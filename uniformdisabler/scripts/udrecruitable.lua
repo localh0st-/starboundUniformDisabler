@@ -84,6 +84,7 @@ end
 
 function recruitable.forcedClothes()
 	sb.logWarn('%s',storage.original)
+	sb.logWarn('%s',storage)
 	if not storage.original then
 	  storage.original = deepcopy(storage["itemSlots"])
 	end
@@ -92,13 +93,20 @@ function recruitable.forcedClothes()
 end
 
 function recruitable.homeClothes()
-  sb.logWarn('%s',storage.original)
+  sb.logWarn('%s',"output test")
+  sb.logWarn('%s',storage)
   if storage.original then
     for slot,item in pairs(storage.original) do
 	  setNpcItemSlot(slot,item)
 	end
   end
   sb.logWarn('%s',storage.original)
+end
+
+function recruitable.testy()
+  sb.logWarn("poduuid storage")
+  sb.logWarn(storage)
+
 end
 
 function deepcopy(orig)

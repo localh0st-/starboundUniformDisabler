@@ -29,9 +29,6 @@ function resetCustomUniform()
     world.sendEntityMessage(member["uniqueId"],"recruit.homeClothes")
   end
   recruitSpawner:markDirty()
---  for _,member in pairs(minions) do
---    world.sendEntityMessage(member["uniqueId"],"recruit.homeClothes")
---  end
 end
 
 function updateCustomUniform()

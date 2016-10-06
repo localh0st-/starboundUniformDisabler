@@ -21,7 +21,6 @@ end
 function resetCustomUniform()
   local myMinions=playerCompanions.getCompanions("followers")
   local lazyMinions=playerCompanions.getCompanions("shipCrew")
-  sb.logWarn("%s","reset uniform")
   for _, member in pairs(myMinions) do
     world.sendEntityMessage(member["uniqueId"],"recruit.homeClothes")
   end
@@ -34,7 +33,6 @@ end
 function updateCustomUniform()
   local myMinions=playerCompanions.getCompanions("followers")
   local lazyMinions=playerCompanions.getCompanions("shipCrew")
-  sb.logWarn("%s","assign uniform")
   for _, member in pairs(myMinions) do
     world.sendEntityMessage(member["uniqueId"],"recruit.forcedClothes")
   end

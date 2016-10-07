@@ -42,11 +42,11 @@ function recruitable.udsetUniform(uniform)
   recruitable.portraitChanged = true
 end
 
-function recruitable.forcedClothes()
+function recruitable.forcedClothes(puni)
 	if not storage.original then
 	  storage.original = deepcopy(storage["itemSlots"])
 	end
-	recruitable.udsetUniform(nil)
+	recruitable.udsetUniform(puni)
 end
 
 function recruitable.homeClothes()

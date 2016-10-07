@@ -1,7 +1,7 @@
 oldInit=Recruit.init
 function Recruit:init(uuid, json)
   oldInit(self,uuid,json)
-  self.original = json.original or {"im original"}
+  self.original = json.original or {}
 end
 
 oldToJson=Recruit.toJson

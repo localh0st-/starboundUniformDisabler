@@ -35,7 +35,7 @@ function recruitable.udsetUniform(uniform)
   end
   for _, slotName in pairs(uniform.slots) do
     if contains(uniformSlots, slotName) then
-      setNpcItemSlot(slotName, recruitable.dyeUniformItem(uniform.items[slotName]))
+      setNpcItemSlot(slotName, uniform.items[slotName])
     end
   end
 

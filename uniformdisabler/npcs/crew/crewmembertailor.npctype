@@ -29,19 +29,9 @@
           "scriptCanvas" : {
             "zlevel" : 1,
             "type" : "canvas",
-            "rect" : [0, 0, 160, 250],
+            "rect" : [0, 0, 200, 250],
             "captureMouseEvents" : true,
             "captureKeyboardEvents" : true
-          },
-          "close" : {
-            "zlevel" : 2,
-            "type" : "button",
-            "base" : "/interface/cockpit/xup.png",
-            "hover" : "/interface/cockpit/xdown.png",
-            "pressed" : "/interface/cockpit/xdown.png",
-            "callback" : "close",
-            "position" : [3, 82],
-            "pressedOffset" : [0, -1]
           }
           },
 		  "scripts" : ["/scripts/penguingui.lua", "/scripts/test.lua"],

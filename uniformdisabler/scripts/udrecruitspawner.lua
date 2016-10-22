@@ -1,3 +1,5 @@
+require "/scripts/companions/recruitspawner.lua"
+
 oldInit=Recruit.init
 function Recruit:init(uuid, json)
   oldInit(self,uuid,json)

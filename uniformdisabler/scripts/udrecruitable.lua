@@ -5,8 +5,19 @@ function recruitable.init()
   message.setHandler("recruit.homeClothes", simpleHandler(recruitable.homeClothes))
 end
 
-
-
+oldrecruitinteract=recruitable.interact
+function recruitable.interact(sourceEntityId)
+  local oldOut = oldrecruitinteract(sourceEntityId)
+  local sourceUniqueId = world.entityUniqueId(sourceEntityId)
+  sb.logWarn("storage")
+  if world.npcType(entity.id()) == "crewmembertailor" then
+    oldOut[2]["passed"] = sourceUniqueId
+	sb.logWarn("%s",oldOut)
+	return oldOut
+  else
+    return oldOut
+  end
+end
 
 
 function recruitable.setUniform(uniform)

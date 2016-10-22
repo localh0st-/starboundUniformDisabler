@@ -1,9 +1,13 @@
 require("/scripts/udrecruitspawner.lua")
 
+udplayerinit=init
+function init()
+  udplayerinit()
+  message.setHandler("recruits.test", simpleHandler(test))
+end
+
 function offerUniformUpdate(recruitUuid, entityId)
-  local config = root.assetJson("/objects/test.config")
-  sb.logWarn("%s",config.interactionConfig)
-  return {"ScriptConsole", config.interactionConfig}
+
 
 end
 
@@ -25,4 +29,9 @@ function updateCustomUniform()
   end
  
   recruitSpawner:markDirty()
+end
+
+function test(Iop)
+  sb.logWarn("%s",Iop)
+  return playerCompanions.getCompanions("crew")
 end

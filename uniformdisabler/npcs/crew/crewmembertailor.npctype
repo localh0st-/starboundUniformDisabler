@@ -34,7 +34,7 @@
             "captureKeyboardEvents" : true
           }
           },
-		  "scripts" : ["/scripts/penguingui.lua", "/scripts/test.lua"],
+		  "scripts" : ["/scripts/penguingui.lua", "/scripts/test.lua","/scripts/textcheckbox.lua"],
           "scriptDelta" : 5,
           "scriptCanvas" : "scriptCanvas"
   

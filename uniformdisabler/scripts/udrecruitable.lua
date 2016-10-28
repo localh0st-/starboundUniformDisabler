@@ -8,11 +8,11 @@ end
 
 oldrecruitinteract=recruitable.interact
 function recruitable.interact(sourceEntityId)
-  local oldOut = oldrecruitinteract(sourceEntityId)
+   oldOut = oldrecruitinteract(sourceEntityId)
   local sourceUniqueId = world.entityUniqueId(sourceEntityId)
   if world.npcType(entity.id()) == "crewmembertailor" then
     oldOut[2]["passed"] = sourceUniqueId
-	  local selfie = world.entityPortrait(entity.id(),"full")
+	  sb.logWarn("%s","interaction changed")
 	return oldOut
   else
     return oldOut
@@ -68,7 +68,6 @@ function recruitable.udsetUniform(uniform)
       setNpcItemSlot(slotName, recruitable.dyeUniformItem(uniform.items[slotName]))
     end
   end
-
   recruitable.portraitChanged = true
 end
 
@@ -76,7 +75,10 @@ function recruitable.forcedClothes(pid, puni)
 	if not storage.original then
 	  storage.original = deepcopy(storage["itemSlots"])
 	end
-	recruitable.udsetClothes(puni)
+    if puni then
+	    recruitable.udsetClothes(puni)
+    end
+	recruitable.portraitChanged = true
 	world.sendEntityMessage(pid,"recruits.savetime")
 end
 
@@ -95,6 +97,7 @@ function recruitable.shipClothes(pid)
 	storage.original = deepcopy(storage["itemSlots"])
   end
   recruitable.udsetUniform(nil)
+  recruitable.portraitChanged = true
   world.sendEntityMessage(pid,"recruits.savetime")
 end
 

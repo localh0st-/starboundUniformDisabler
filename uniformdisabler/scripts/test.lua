@@ -1,7 +1,7 @@
 
 
 function init()
-  local list = List(0, 0, 100, 150, 25,PortraitTextBoxCheck)
+  local list = List(4, 101, 100, 130, 25,PortraitTextBoxCheck)
   local pid = config.getParameter("passed")
   out = world.sendEntityMessage(pid,"recruits.test")
   local textsize = 14

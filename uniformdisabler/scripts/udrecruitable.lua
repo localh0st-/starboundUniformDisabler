@@ -72,6 +72,7 @@ function recruitable.udsetUniform(uniform)
 end
 
 function recruitable.forcedClothes(pid, puni)
+    sb.logWarn("%s",storage.original)
 	if not storage.original then
 	  storage.original = deepcopy(storage["itemSlots"])
 	end
@@ -83,6 +84,7 @@ function recruitable.forcedClothes(pid, puni)
 end
 
 function recruitable.homeClothes(pid)
+sb.logWarn("%s",storage)
   if storage.original then
     for slot,item in pairs(storage.original) do
 	  setNpcItemSlot(slot,item)
@@ -93,6 +95,8 @@ function recruitable.homeClothes(pid)
 end
 
 function recruitable.shipClothes(pid)
+   sb.logWarn("%s",storage)
+  sb.logWarn("%s",storage.original)
   if not storage.original then
 	storage.original = deepcopy(storage["itemSlots"])
   end
@@ -100,6 +104,19 @@ function recruitable.shipClothes(pid)
   recruitable.portraitChanged = true
   world.sendEntityMessage(pid,"recruits.savetime")
 end
+
+
+udoldupdatestatus=recruitable.updateStatus
+
+function recruitable.updateStatus(persistentEffects, damageTeam)
+  local tempstorage = storage.original
+  local out
+  out = udoldupdatestatus(persistentEffects, damageTeam)
+  out.storage.original = tempstorage
+  return out
+
+end
+
 
 function deepcopy(orig)
     local orig_type = type(orig)

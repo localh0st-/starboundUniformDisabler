@@ -23,8 +23,7 @@
           "background" : {
             "zlevel" : 0,
             "type" : "background",
-            "fileHeader" : "/interface/fuel/fuelUIheader.png",
-            "fileBody" : "/interface/fuel/fuelUIbody.png"
+            "fileBody" : "/interface/tailor/tailor1.png"
           },
           "scriptCanvas" : {
             "zlevel" : 1,

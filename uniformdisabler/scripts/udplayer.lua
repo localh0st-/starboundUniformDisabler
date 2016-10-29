@@ -14,6 +14,6 @@ function savetime()
   recruitSpawner:markDirty()
 end
 --gets the crew and crew paprameters
-function test(Iop)
+function test()
   return playerCompanions.getCompanions("crew")
 end

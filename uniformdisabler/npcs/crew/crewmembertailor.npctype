@@ -28,9 +28,9 @@
           "scriptCanvas" : {
             "zlevel" : 1,
             "type" : "canvas",
-            "rect" : [0, 0, 200, 250],
+            "rect" : [0, 0, 250, 250],
             "captureMouseEvents" : true,
-            "captureKeyboardEvents" : true
+            "captureKeyboardEvents" : false
           }
           },
 		  "scripts" : ["/scripts/penguingui.lua", "/scripts/test.lua","/scripts/textcheckbox.lua"],

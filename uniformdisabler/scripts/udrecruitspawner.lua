@@ -1,5 +1,5 @@
 
-
+-- adds saving and loading of the "orignial" variable
 oldInit=Recruit.init
 function Recruit:init(uuid, json)
   oldInit(self,uuid,json)

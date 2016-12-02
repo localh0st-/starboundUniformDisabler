@@ -5,8 +5,11 @@ function init()
   local xlistpadding= 5
   local listystart = 45
   local listwidth = 100
-  local buttonystart = 85
-  local buttonSeperation = 19
+  local buttonystart = 80
+  local buttonSeperation = 26
+  local buttonwidth = 100
+  local buttontextheight = 14
+  local buttonheight = 20
   
   --creation of the left(up) scroll button
   local buttonleft = ImageButton(xlistpadding,listystart,"/interface/tailor/leftbutton.png")
@@ -23,16 +26,16 @@ function init()
   local pid = config.getParameter("passed")
   -- gets the list of crewmembers to populate the list with
   out = world.sendEntityMessage(pid,"recruits.test")
-  local textsize = 14
+  local maxtextsize = 12
   -- checks if promise was finished and if it was then will add each emeber of the crew to the list as an item and each item is also given all of the recruits data so it can be accesed later
   if out:finished() and out:result() then
     for _, member in pairs(out:result()) do
-      local item = list:emplaceItem(member.name,member.portrait,textsize)
+      local item = list:emplaceItem(member.name,member.portrait,maxtextsize)
 	  item.data=member
     end
   end
   
-  greeting = Label(5, buttonleft.height+listystart+8,"Hello, my captain. What would you like the crew to wear? \nYour outfit, a sanctioned uniform, or pherhaps \nthey could wear the clothes they brought with them.", 8)
+  greeting = Label(xlistpadding+7, buttonleft.height+listystart+8,"Hello, my captain. What would you like the crew to wear? \nYour outfit, a sanctioned uniform, or pherhaps \nthey could wear the clothes they brought with them.", 8)
   
   GUI.add(list)
   GUI.add(greeting)
@@ -44,23 +47,23 @@ function init()
   GUI.add(buttonright)
 
   --creation of the functional buttons that whn clicked will close the window and perform the desired function on the selcted crewmembers
-  local buttonwidth = 80
+
   local xposUniformButtons = buttonRightxStart+ buttonright.width+ 10
-  local buttonsig = TextButton(xposUniformButtons, buttonystart, buttonwidth, 16, "Original")
+  local buttonsig = CustomTextButton(xposUniformButtons, buttonystart, buttonwidth, buttonheight, "Original",nil,buttontextheight)
   buttonsig.onClick = function(mouseButton)
    callOriginal(pid,list)
    console.dismiss()
   end
   GUI.add(buttonsig)
   
-  local button = TextButton(xposUniformButtons,buttonystart +buttonSeperation, buttonwidth, 16, "Uniform")
+  local button = CustomTextButton(xposUniformButtons,buttonystart +buttonSeperation, buttonwidth, buttonheight, "Uniform",nil,buttontextheight)
   button.onClick = function(mouseButton)
    callUniform(pid,list)
    console.dismiss()
   end
   GUI.add(button)
   -- player outfit called here becasue it does not respond well(will not run in the right order) to being called when in inside another promise function
-  local outfitbutton = TextButton(xposUniformButtons,buttonystart +2*buttonSeperation, buttonwidth, 16, "Outfit")
+  local outfitbutton = CustomTextButton(xposUniformButtons,buttonystart +2*buttonSeperation, buttonwidth, buttonheight, "Outfit",nil,buttontextheight)
   outfitbutton.onClick = function(mouseButton)
    callPlayerOutfit(pid,list)
    console.dismiss()

@@ -1,0 +1,34 @@
+[
+{"op": "replace","path": "/scriptConfig/crew/interactAction", "value": "ScriptConsole"},
+
+{"op": "remove","path": "/scriptConfig/crew/interactData"},
+
+{"op": "add","path":"/scriptConfig/crew/interactData", "value": {
+        "gui" : {
+          "background" : {
+            "zlevel" : 0,
+            "type" : "background",
+            "fileBody" : "/interface/tailor/tailor1.png"
+            },
+          "scriptCanvas" : {
+            "zlevel" : 1,
+            "type" : "canvas",
+            "rect" : [0, 0, 250, 250],
+            "captureMouseEvents" : true,
+            "captureKeyboardEvents" : false
+            },
+		  "close" : {
+            "zlevel" : 2,
+            "type" : "button",
+            "base" : "/interface/cockpit/xup.png",
+            "hover" : "/interface/cockpit/xdown.png",
+            "pressed" : "/interface/cockpit/xdown.png",
+            "callback" : "close",
+            "position" : [236, 230],
+            "pressedOffset" : [0, -1]
+            }
+          }}},
+{"op": "add","path":"/scriptConfig/crew/interactData/scripts", "value": ["/scripts/penguingui.lua","/scripts/test.lua","/scripts/textcheckbox.lua"]},
+{"op": "add","path":"/scriptConfig/crew/interactData/scriptDelta", "value": 5},
+{"op": "add","path":"/scriptConfig/crew/interactData/scriptCanvas", "value": "scriptCanvas"}
+]

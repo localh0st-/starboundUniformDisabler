@@ -24,21 +24,22 @@ end
 
 PortraitTextBoxCheck = class(TextBoxCheck)
 -- adds boxes with crew portraits to the left
-function PortraitTextBoxCheck:_init(x, y, width, height, text, drawable, textheight)
+function PortraitTextBoxCheck:_init(x, y, width, height, text, drawable, maxtextheight)
   RadioButton._init(self, x, y, 0)
   self.width = width
+  self.textheight = maxtextheight
   self.height = height
-  self.textheight = textheight
-  
+  self.imageWidth = 0
   local padding = self.textPadding
-  local fontSize = textheight - padding * 2
+  local fontSize = maxtextheight or height - padding * 2
   -- edit this to make thge image
   local portrait = Panel(0,0)
   for index,part in pairs(drawable) do
     local hello=Image(0,0,part.image,0.65)
     portrait:add(hello)
+	self.imageWidth = math.max(self.imageWidth, hello.width)
   end
-  local label = Label(0, padding, text, fontSize, fontColor)
+  local label = Label(self.imageWidth, padding, text, fontSize, fontColor)
   self.label = label
   self.portrait = portrait
   self:add(label)
@@ -70,9 +71,10 @@ function PortraitTextBoxCheck:repositionLabel()
   local label = self.label
   local text = label.text
   local padding = self.textPadding
-  local maxHeight = self.textheight - padding * 2
-  local maxWidth = self.width - padding * 2
-  if label.height < maxHeight then
+  local imageWidth = self.imageWidth
+  local maxHeight = self.height - padding * 2
+  local maxWidth = self.width - padding * 2 - imageWidth
+  if label.height < maxHeight and not self.textheight then
     label.fontSize = maxHeight
     label:recalculateBounds()
   end
@@ -80,7 +82,7 @@ function PortraitTextBoxCheck:repositionLabel()
     label.fontSize = label.fontSize - 1
     label:recalculateBounds()
   end
-  label.x = (self.width - label.width) / 2
+  label.x = ((self.width- imageWidth) - label.width) / 2 + imageWidth
   label.y = (self.height - label.height) / 2
 end
 
@@ -142,7 +144,7 @@ function PaginatedList:emplaceItem(...)
   else
     width = self.width - (self.borderSize * 2
                             + self.itemPadding * 2
-                             + 2)
+                             )
     height = self.itemSize
   end
   item = self.itemFactory(0, 0, width, height, ...)
@@ -259,4 +261,48 @@ function ImageButton:draw(dt)
   local scale = self.scale
   
   PtUtil.drawImage(imagePath, {startX, startY}, scale)
+end
+
+CustomTextButton = class(TextButton)
+
+function CustomTextButton:_init(x, y, width, height, text, fontColor,maxtextheight)
+  Button._init(self, x, y, width, height)
+  local padding = self.textPadding
+  local fontSize = maxtextheight or height - padding * 2
+  local label = Label(0, padding, text, fontSize, fontColor)
+  self.text = text
+  self.maxtextheight = maxtextheight
+  
+  self.label = label
+  self:add(label)
+
+  self:addListener(
+    "text",
+    function(t, k, old, new)
+      t.label.text = new
+      t:repositionLabel()
+    end
+  )
+
+  self:repositionLabel()
+end
+
+
+function CustomTextButton:repositionLabel()
+  local label = self.label
+  local text = label.text
+  local padding = self.textPadding
+  local maxtextheight = self.maxtextheight
+  local maxHeight = self.height - padding * 2
+  local maxWidth = self.width - padding * 2
+  if label.height < maxHeight and not maxtextheight then
+    label.fontSize = maxHeight
+    label:recalculateBounds()
+  end
+  while label.width > maxWidth do
+    label.fontSize = label.fontSize - 1
+    label:recalculateBounds()
+  end
+  label.x = (self.width - label.width) / 2
+  label.y = (self.height - label.height) / 2
 end

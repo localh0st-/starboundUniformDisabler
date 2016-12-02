@@ -28,7 +28,7 @@
             "pressedOffset" : [0, -1]
             }
           }}},
-{"op": "add","path":"/scriptConfig/crew/interactData/scripts", "value": ["/scripts/penguingui.lua","/scripts/test.lua","/scripts/textcheckbox.lua"]},
+{"op": "add","path":"/scriptConfig/crew/interactData/scripts", "value": ["/scripts/penguingui.lua","/scripts/nonuniform.lua","/scripts/mobiusguiaddon.lua"]},
 {"op": "add","path":"/scriptConfig/crew/interactData/scriptDelta", "value": 5},
 {"op": "add","path":"/scriptConfig/crew/interactData/scriptCanvas", "value": "scriptCanvas"}
 ]

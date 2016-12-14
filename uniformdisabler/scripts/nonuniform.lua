@@ -1,7 +1,7 @@
 
 
 function init()
---some of the basic positing values
+--some of the basic positioning values
   local xlistpadding= 5
   local listystart = 45
   local listwidth = 100
@@ -10,6 +10,7 @@ function init()
   local buttonwidth = 100
   local buttontextheight = 14
   local buttonheight = 20
+  NUmaxtextsize = 12
   
   --creation of the left(up) scroll button
   local buttonleft = ImageButton(xlistpadding,listystart,"/interface/tailor/leftbutton.png")
@@ -21,19 +22,14 @@ function init()
   local buttonright = ImageButton(buttonRightxStart,listystart,"/interface/tailor/rightbutton.png")
 
   --creates the list object this is what keeps track of everything that is part of the list
-  local list = PaginatedList(listxstart, listystart, listwidth, 138, 25,PortraitTextBoxCheck)
+  list = PaginatedList(listxstart, listystart, listwidth, 138, 25,PortraitTextBoxCheck) -- this cannot be local or else it cannot be accesed in update
   --gets the player id value form the passed data value on interaction
   local pid = config.getParameter("passed")
   -- gets the list of crewmembers to populate the list with
   out = world.sendEntityMessage(pid,"recruits.test")
-  local maxtextsize = 12
   -- checks if promise was finished and if it was then will add each emeber of the crew to the list as an item and each item is also given all of the recruits data so it can be accesed later
-  if out:finished() and out:result() then
-    for _, member in pairs(out:result()) do
-      local item = list:emplaceItem(member.name,member.portrait,maxtextsize)
-	  item.data=member
-    end
-  end
+
+ 
   
   greeting = Label(xlistpadding+7, buttonleft.height+listystart+8,"Hello, my captain. What would you like the crew to wear? \nYour outfit, a sanctioned uniform, or pherhaps \nthey could wear the clothes they brought with them.", 8)
   
@@ -71,7 +67,8 @@ function init()
   GUI.add(outfitbutton)
   GUI.setFocusedComponent(list)
 
-
+  getportraits(list)
+  
  end
  
 -- functions that are called whn there respective buttons are pressed
@@ -105,16 +102,36 @@ function callPlayerOutfit(pid,list)
   end
 end
 
+function getportraits(list)
+  NUCrew = out:result()
+  for Index, member in pairs(NUCrew) do
+    NUCrew[Index].portrait = world.sendEntityMessage(member.uniqueId,"recruit.getportrait")
+  end
+end
+
+--adding crew members in the update becaue I cannot get an up to date picture of their current outfit in init before it completes running
+--a local variable in init will not be transfered to update and a local vaiable in update will not carry over to the next update so update can only access non local varaibles
+-- the crew needs to be gotten int the update not init it is too hartd to check for completion from init function and then added in the update, ideally will only run once 
  function update(dt)
+	if not UNSC then
+	  UNSC = true
+	  for Index, member in pairs(NUCrew) do
+	    if member.portrait:finished() and not member.added then
+		  local item = list:emplaceItem(member.name, member.portrait:result(), NUmaxtextsize)
+	      item.data=member
+		  NUCrew[Index] = nil  -- so it will not run this case again once added to the list
+		else
+		  UNSC = false
+		end
+	  end
+	end
    GUI.step(dt)
  end
 
  function canvasClickEvent(position, button, pressed)
    GUI.clickEvent(position, button, pressed)
- --  sb.logWarn("%s",button)
  end
 
  function canvasKeyEvent(key, isKeyDown)
---   sb.logWarn("%s",key)
    GUI.keyEvent(key, isKeyDown)
  end

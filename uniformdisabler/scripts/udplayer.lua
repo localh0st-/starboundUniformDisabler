@@ -9,12 +9,14 @@ function init()
 end
 
 
---tells recruit spawner that the crewmembers have been updated
+--tells recruit spawner that the crewmembers have been updated and so their data should be updated in the recruitSpawner
 function savetime()
   recruitSpawner:markDirty()
 end
 --gets the crew and crew paprameters
 function klonoa()
-
-  return playerCompanions.getCompanions("crew")
+   local followers = playerCompanions.getCompanions("followers")
+   local crew = playerCompanions.getCompanions("shipCrew")
+   util.appendLists(crew,followers)
+   return crew
 end

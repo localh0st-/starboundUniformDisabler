@@ -1,11 +1,12 @@
 
---creates the handlers and functions fro the crew to change their items
+--creates the handlers and functions for the crew to change their items
 oldrecuitinitud=recruitable.init
 function recruitable.init()
   oldrecuitinitud()
   message.setHandler("recruit.forcedClothes", simpleHandler(recruitable.forcedClothes))
   message.setHandler("recruit.homeClothes", simpleHandler(recruitable.homeClothes))
   message.setHandler("recruit.shipClothes", simpleHandler(recruitable.shipClothes))
+  message.setHandler("recruit.getportrait", simpleHandler(recruitable.riolu))
 end
 -- adds the player id to the list of parameters being passed to the tailor
 oldrecruitinteract=recruitable.interact
@@ -21,7 +22,7 @@ function recruitable.interact(sourceEntityId)
   end
 end
 
---rewrites the opld vanila function so tha the uniform will no longer be contantly aasing
+--rewrites the opld vanila function so tha the uniform will no longer be contantly asigning
 function recruitable.setUniform(uniform)
   storage.crewUniform = uniform
 
@@ -52,7 +53,6 @@ function recruitable.udsetClothes(uniform)
       setNpcItemSlot(slotName, uniform.items[slotName])
     end
   end
-
   recruitable.portraitChanged = true
 end
 -- the original setuniform function it is used to assign the uniforms when desired
@@ -113,7 +113,10 @@ function recruitable.updateStatus(persistentEffects, damageTeam)
   out = udoldupdatestatus(persistentEffects, damageTeam)
   out.storage.original = tempstorage
   return out
+end
 
+function recruitable.riolu()
+	return world.entityPortrait(entity.id(),"full")
 end
 
 --a recursive copy function that gets around lua's table pionter issues

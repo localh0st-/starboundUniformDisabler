@@ -117,8 +117,10 @@ end
 	  UNSC = true
 	  for Index, member in pairs(NUCrew) do
 	    if member.portrait:finished() and not member.added then
-		  local item = list:emplaceItem(member.name, member.portrait:result(), NUmaxtextsize)
-	      item.data=member
+		  if member.portrait:result() then
+		    local item = list:emplaceItem(member.name, member.portrait:result(), NUmaxtextsize)
+			item.data=member
+		  end
 		  NUCrew[Index] = nil  -- so it will not run this case again once added to the list
 		else
 		  UNSC = false

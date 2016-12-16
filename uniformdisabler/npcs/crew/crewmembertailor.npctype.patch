@@ -18,11 +18,11 @@
             "captureKeyboardEvents" : false
             },
 		  "close" : {
-            "zlevel" : 2,
+            "zlevel" : 3,
             "type" : "button",
-            "base" : "/interface/cockpit/xup.png",
-            "hover" : "/interface/cockpit/xdown.png",
-            "pressed" : "/interface/cockpit/xdown.png",
+            "base" : "/interface/x.png",
+            "hover" : "/interface/xhover.png",
+            "pressed" : "/interface/xpress.png",
             "callback" : "close",
             "position" : [236, 230],
             "pressedOffset" : [0, -1]

@@ -42,6 +42,7 @@ function recruitable.udsetClothes(uniform)
   storage.crewUniform = uniform
 
   local uniformSlots = config.getParameter("crew.uniformSlots")
+  uniformSlots[#uniformSlots+1],uniformSlots[#uniformSlots+2]='head','headCosmetic'
   if not uniform then
     uniform = {
       slots = uniformSlots,
@@ -60,6 +61,8 @@ function recruitable.udsetUniform(uniform)
   storage.crewUniform = uniform
 
   local uniformSlots = config.getParameter("crew.uniformSlots")
+  -- head slot is added both here and in playr.config becasue for some reason they have the crew uniform defined in 2 diffenrent places and call on both of them in differnt functions
+  uniformSlots[#uniformSlots+1],uniformSlots[#uniformSlots+2]='head','headCosmetic'
   if not uniform then
     uniform = {
       slots = uniformSlots,

@@ -2,6 +2,7 @@
 
 function init()
 --some of the basic positioning values
+-- notes: changes needed penguin ui now needs to take in a canvas name
   local xlistpadding= 5
   local listystart = 45
   local listwidth = 100
@@ -11,18 +12,18 @@ function init()
   local buttontextheight = 14
   local buttonheight = 20
   NUmaxtextsize = 12
-  
+  NUCanvas = widget.bindCanvas("scriptCanvas")
   --creation of the left(up) scroll button
-  local buttonleft = ImageButton(xlistpadding,listystart,"/interface/tailor/leftbutton.png")
-
+  local buttonleft = ImageButton(NUCanvas, xlistpadding,listystart,"/interface/tailor/leftbutton.png")
+  widget.focus("scriptCanvas")
  
   local listxstart= buttonleft.width+xlistpadding
   local buttonRightxStart = listxstart+listwidth
   -- creation of the right(down) scroll button
-  local buttonright = ImageButton(buttonRightxStart,listystart,"/interface/tailor/rightbutton.png")
+  local buttonright = ImageButton(NUCanvas, buttonRightxStart,listystart,"/interface/tailor/rightbutton.png")
 
   --creates the list object this is what keeps track of everything that is part of the list
-  list = PaginatedList(listxstart, listystart, listwidth, 138, 25,PortraitTextBoxCheck) -- this cannot be local or else it cannot be accesed in update
+  list = PaginatedList(NUCanvas,listxstart, listystart, listwidth, 138, 25,PortraitTextBoxCheck) -- this cannot be local or else it cannot be accesed in update
   --gets the player id value form the passed data value on interaction
   local pid = config.getParameter("passed")
   -- gets the list of crewmembers to populate the list with
@@ -31,7 +32,7 @@ function init()
 
  
   
-  greeting = Label(xlistpadding+7, buttonleft.height+listystart+8,"Hello, my captain. What would you like the crew to wear? \nYour outfit, a sanctioned uniform, or pherhaps \nthey could wear the clothes they brought with them.", 8)
+  greeting = Label(NUCanvas, xlistpadding+7, buttonleft.height+listystart+8,"Hello, my captain. What would you like the crew to wear? \nYour outfit, a sanctioned uniform, or pherhaps \nthey could wear the clothes they brought with them.", 8)
   
   GUI.add(list)
   GUI.add(greeting)
@@ -45,29 +46,30 @@ function init()
   --creation of the functional buttons that whn clicked will close the window and perform the desired function on the selcted crewmembers
 
   local xposUniformButtons = buttonRightxStart+ buttonright.width+ 10
-  local buttonsig = CustomTextButton(xposUniformButtons, buttonystart, buttonwidth, buttonheight, "Original",nil,buttontextheight)
+  local buttonsig = CustomTextButton(NUCanvas, xposUniformButtons, buttonystart, buttonwidth, buttonheight, "Original",nil,buttontextheight)
   buttonsig.onClick = function(mouseButton)
    callOriginal(pid,list)
-   console.dismiss()
+   pane.dismiss()
   end
   GUI.add(buttonsig)
   
-  local button = CustomTextButton(xposUniformButtons,buttonystart +buttonSeperation, buttonwidth, buttonheight, "Uniform",nil,buttontextheight)
+  local button = CustomTextButton(NUCanvas, xposUniformButtons,buttonystart +buttonSeperation, buttonwidth, buttonheight, "Uniform",nil,buttontextheight)
   button.onClick = function(mouseButton)
    callUniform(pid,list)
-   console.dismiss()
+   pane.dismiss()
   end
   GUI.add(button)
   -- player outfit called here becasue it does not respond well(will not run in the right order) to being called when in inside another promise function
-  local outfitbutton = CustomTextButton(xposUniformButtons,buttonystart +2*buttonSeperation, buttonwidth, buttonheight, "Outfit",nil,buttontextheight)
+  local outfitbutton = CustomTextButton(NUCanvas, xposUniformButtons,buttonystart +2*buttonSeperation, buttonwidth, buttonheight, "Outfit",nil,buttontextheight)
   outfitbutton.onClick = function(mouseButton)
    callPlayerOutfit(pid,list)
-   console.dismiss()
+   pane.dismiss()
   end
   GUI.add(outfitbutton)
   GUI.setFocusedComponent(list)
 
   getportraits(list)
+  
   
  end
  
@@ -127,7 +129,7 @@ end
 		end
 	  end
 	end
-   GUI.step(dt)
+   GUI.step(NUCanvas,dt)
  end
 
  function canvasClickEvent(position, button, pressed)

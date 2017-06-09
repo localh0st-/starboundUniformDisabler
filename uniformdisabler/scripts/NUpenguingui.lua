@@ -5,6 +5,8 @@
 -- This script contains all the scripts in this library, so you only need to
 -- include this script for production purposes.
 
+
+--this is the editied version will need to upload later
 --------------------------------------------------------------------------------
 -- Util.lua
 --------------------------------------------------------------------------------
@@ -41,16 +43,16 @@ function PtUtil.library()
   }
 end
 
-function PtUtil.drawText(text, options, fontSize, color)
+function PtUtil.drawText(CanvasObj, text, options, fontSize, color)
   fontSize = fontSize or 16
   if text:byte() == 32 then -- If it starts with a space, offset the string
     local xOffset = PtUtil.getStringWidth(" ", fontSize)
     local oldX = options.position[1]
     options.position[1] = oldX + xOffset
-    console.canvasDrawText(text, options, fontSize, color)
+    CanvasObj:drawText(text, options, fontSize, color)
     options.position[1] = oldX
   else
-    console.canvasDrawText(text, options, fontSize, color)
+    CanvasObj:drawText(text, options, fontSize, color)
   end
 end
 
@@ -125,54 +127,58 @@ function PtUtil.getKey(key, shift, capslock)
   end
 end
 
-function PtUtil.fillRect(rect, color)
-  console.canvasDrawRect(rect, color)
+function PtUtil.fillRect(CanvasObj, rect, color)
+  CanvasObj:drawRect(rect, color)
 end
 
 function PtUtil.fillPoly(poly, color)
   --console.logInfo("fillPoly is not functional yet")
 end
 
-function PtUtil.drawLine(p1, p2, color, width)
-  console.canvasDrawLine(p1, p2, color, width * 2)
+function PtUtil.drawLine(CanvasObj, p1, p2, color, width)
+  CanvasObj:drawLine(p1, p2, color, width * 2)
 end
 
-function PtUtil.drawRect(rect, color, width)
+function PtUtil.drawRect(CanvasObj, rect, color, width)
   local minX = rect[1] + width / 2
   local minY = math.floor((rect[2] + width / 2) * 2) / 2
   local maxX = rect[3] - width / 2
   local maxY = math.floor((rect[4] - width / 2) * 2) / 2
   PtUtil.drawLine(
+    CanvasObj,
     {minX - width / 2, minY},
     {maxX + width / 2, minY},
     color, width
   )
   PtUtil.drawLine(
+    CanvasObj,
     {maxX, minY},
     {maxX, maxY},
     color, width
   )
   PtUtil.drawLine(
+    CanvasObj,
     {minX - width / 2, maxY},
     {maxX + width / 2, maxY},
     color, width
   )
   PtUtil.drawLine(
+    CanvasObj,
     {minX, minY},
     {minX, maxY},
     color, width
   )
 end
 
-function PtUtil.drawPoly(poly, color, width)
+function PtUtil.drawPoly(CanvasObj, poly, color, width)
   for i=1,#poly - 1,1 do
-    PtUtil.drawLine(poly[i], poly[i + 1], color, width)
+    PtUtil.drawLine(CanvasObj, poly[i], poly[i + 1], color, width)
   end
-  PtUtil.drawLine(poly[#poly], poly[1], color, width)
+  PtUtil.drawLine(CanvasObj, poly[#poly], poly[1], color, width)
 end
 
-function PtUtil.drawImage(image, position, scale)
-  console.canvasDrawImage(image, position, scale)
+function PtUtil.drawImage(CanvasObj, image, position, scale)
+  CanvasObj:drawImage(image, position, scale)
 end
 
 function ripairs(t)
@@ -940,8 +946,8 @@ function GUI.keyEvent(key, pressed)
   end
 end
 
-function GUI.step(dt)
-  GUI.mousePosition = console.canvasMousePosition()
+function GUI.step(CanvasObj,dt)
+  GUI.mousePosition = CanvasObj:mousePosition()
   local hoverComponent
   for _,component in ipairs(GUI.components) do
     if component.visible ~= false then
@@ -1107,8 +1113,9 @@ Line.color = {0, 0, 0}
 Line.size = 1
 
 
-function Line:_init(x, y, endX, endY, color, lineSize)
+function Line:_init(CanvasObj, x, y, endX, endY, color, lineSize)
   Component._init(self)
+  self.CanvasObj = CanvasObj
   self.x = x
   self.y = y
   self.endX = x
@@ -1129,7 +1136,7 @@ function Line:draw(dt)
 
   local size = self.size
   local color = self.color
-  PtUtil.drawLine({startX, startY}, {endX, endY}, color, width)
+  PtUtil.drawLine(self.CanvasObj, {startX, startY}, {endX, endY}, color, width)
 end
 
 
@@ -1142,8 +1149,9 @@ Rectangle.color = {0, 0, 0}
 Rectangle.lineSize = nil
 
 
-function Rectangle:_init(x, y, width, height, color, lineSize)
+function Rectangle:_init(CanvasObj,x, y, width, height, color, lineSize)
   Component._init(self)
+  self.CanvasObj = CanvasObj
   self.x = x
   self.y = y
   self.width = width
@@ -1163,9 +1171,9 @@ function Rectangle:draw(dt)
   local lineSize = self.lineSize
   local color = self.color
   if lineSize then
-    PtUtil.drawRect(rect, color, lineSize)
+    PtUtil.drawRect(self.CanvasObj, rect, color, lineSize)
   else
-    PtUtil.fillRect(rect, color)
+    PtUtil.fillRect(self.CanvasObj, rect, color)
   end
 end
 
@@ -1346,8 +1354,8 @@ Frame.borderThickness = 1
 Frame.backgroundColor = {35, 35, 35}
 
 
-function Frame:_init(x, y)
-  Panel._init(self, x, y)
+function Frame:_init(CanvasObj, x, y)
+  Panel._init(self, CanvasObj, x, y)
 end
 
 
@@ -1381,8 +1389,8 @@ function Frame:draw(dt)
     startX + w - border, startY + h - border
   }
   
-  PtUtil.drawRect(borderRect, self.borderColor, border)
-  PtUtil.fillRect(backgroundRect, self.backgroundColor)
+  PtUtil.drawRect(self.CanvasObj, borderRect, self.borderColor, border)
+  PtUtil.fillRect(self.CanvasObj, backgroundRect, self.backgroundColor)
 end
 
 function Frame:clickEvent(position, button, pressed)
@@ -1407,12 +1415,12 @@ Button.color = {38, 38, 38} --#262626
 Button.hoverColor = {84, 84, 84} --#545454
 
 
-function Button:_init(x, y, width, height)
+function Button:_init(CanvasObj, x, y, width, height)
   --world.logInfo("Button init with "..x..","..y..","..width..","..height..".")
 
   Component._init(self)
   self.mouseOver = false
-
+  self.CanvasObj = CanvasObj
   self.x = x
   self.y = y
   self.width = width
@@ -1452,13 +1460,13 @@ function Button:draw(dt)
 
   --world.logInfo("drawing now...")
   
-  PtUtil.drawPoly(borderPoly, self.outerBorderColor, 1)
+  PtUtil.drawPoly(self.CanvasObj, borderPoly, self.outerBorderColor, 1)
   if self.mouseOver then
-    PtUtil.drawRect(innerBorderRect, self.innerBorderHoverColor, 0.5)
-    PtUtil.fillRect(rect, self.hoverColor)
+    PtUtil.drawRect(self.CanvasObj, innerBorderRect, self.innerBorderHoverColor, 0.5)
+    PtUtil.fillRect(self.CanvasObj, rect, self.hoverColor)
   else
-    PtUtil.drawRect(innerBorderRect, self.innerBorderColor, 0.5)
-    PtUtil.fillRect(rect, self.color)
+    PtUtil.drawRect(self.CanvasObj, innerBorderRect, self.innerBorderColor, 0.5)
+    PtUtil.fillRect(self.CanvasObj, rect, self.color)
   end
 end
 
@@ -1495,9 +1503,10 @@ Label = class(Component)
 Label.text = nil
 
 
-function Label:_init(x, y, text, fontSize, fontColor)
+function Label:_init(CanvasObj, x, y, text, fontSize, fontColor)
   Component._init(self)
   fontSize = fontSize or 10
+  self.CanvasObj = CanvasObj
   self.fontSize = fontSize
   self.fontColor = fontColor or {255, 255, 255}
   self.text = text
@@ -1517,7 +1526,7 @@ function Label:draw(dt)
   local startX = self.x + self.offset[1]
   local startY = self.y + self.offset[2]
   
-  PtUtil.drawText(self.text, {
+  PtUtil.drawText(self.CanvasObj, self.text, {
                     position = {startX, startY},
                     verticalAnchor = "bottom"
                              }, self.fontSize, self.fontColor)
@@ -1532,11 +1541,11 @@ TextButton.text = nil
 TextButton.textPadding = 2
 
 
-function TextButton:_init(x, y, width, height, text, fontColor)
-  Button._init(self, x, y, width, height)
+function TextButton:_init(CanvasObj, x, y, width, height, text, fontColor)
+  Button._init(self, CanvasObj, x, y, width, height)
   local padding = self.textPadding
   local fontSize = height - padding * 2
-  local label = Label(0, padding, text, fontSize, fontColor)
+  local label = Label(CanvasObj, 0, padding, text, fontSize, fontColor)
   self.text = text
   
   self.label = label
@@ -1594,8 +1603,9 @@ TextField.repeatDelay = 0.5
 TextField.repeatInterval = 0.05
 
 
-function TextField:_init(x, y, width, height, defaultText)
+function TextField:_init(CanvasObj, x, y, width, height, defaultText)
   Component._init(self)
+  self.CanvasObj = CanvasObj
   self.x = x
   self.y = y
   self.width = width
@@ -1647,8 +1657,8 @@ function TextField:draw(dt)
   local backgroundRect = {
     startX + 1, startY + 1, startX + w - 1, startY + h - 1
   }
-  PtUtil.fillRect(borderRect, self.borderColor)
-  PtUtil.fillRect(backgroundRect, self.backgroundColor)
+  PtUtil.fillRect(self.CanvasObj, borderRect, self.borderColor)
+  PtUtil.fillRect(self.CanvasObj, backgroundRect, self.backgroundColor)
 
   local text = self.text
   local default = (text == "") and (self.defaultText ~= nil)
@@ -1665,7 +1675,7 @@ function TextField:draw(dt)
     or text:sub(self.textOffset + 1, self.textOffset
                   + (self.textClip or #text))
 
-  PtUtil.drawText(text, {
+  PtUtil.drawText(self.CanvasObj, text, {
                     position = {
                       startX + self.hPadding,
                       startY + self.vPadding
@@ -1680,7 +1690,7 @@ function TextField:draw(dt)
     if timer > rate / 2 then -- Draw cursor
       local cursorX = startX + self.cursorX + self.hPadding
       local cursorY = startY + self.vPadding
-      PtUtil.drawLine({cursorX, cursorY},
+      PtUtil.drawLine(self.CanvasObj, {cursorX, cursorY},
         {cursorX, cursorY + h - self.vPadding * 2},
         self.cursorColor,
         1)
@@ -1839,10 +1849,10 @@ end
 Image = class(Component)
 
 
-function Image:_init(x, y, image, scale)
+function Image:_init(CanvasObj, x, y, image, scale)
   Component._init(self)
   scale = scale or 1
-  
+  self.CanvasObj = CanvasObj
   self.x = x
   self.y = y
   local imageSize = root.imageSize(image)
@@ -1859,7 +1869,7 @@ function Image:draw(dt)
   local image = self.image
   local scale = self.scale
   
-  PtUtil.drawImage(image, {startX, startY}, scale)
+  PtUtil.drawImage(self.CanvasObj, image, {startX, startY}, scale)
 end
 
 --------------------------------------------------------------------------------
@@ -1874,10 +1884,10 @@ CheckBox.checkColor = {197, 26, 11}
 CheckBox.pressedColor = {52, 52, 52}
 
 
-function CheckBox:_init(x, y, size)
+function CheckBox:_init(CanvasObj, x, y, size)
   Component._init(self)
   self.mouseOver = false
-
+  self.CanvasObj = CanvasObj
   self.x = x
   self.y = y
   self.width = size
@@ -1901,14 +1911,14 @@ function CheckBox:draw(dt)
 
   local borderRect = {startX, startY, startX + w, startY + h}
   local rect = {startX + 1, startY + 1, startX + w - 1, startY + h - 1}
-  PtUtil.drawRect(borderRect, self.borderColor, 1)
+  PtUtil.drawRect(self.CanvasObj, borderRect, self.borderColor, 1)
 
   if self.pressed then
-    PtUtil.fillRect(rect, self.pressedColor)
+    PtUtil.fillRect(self.CanvasObj, rect, self.pressedColor)
   elseif self.mouseOver then
-    PtUtil.fillRect(rect, self.hoverColor)
+    PtUtil.fillRect(self.CanvasObj, rect, self.hoverColor)
   else
-    PtUtil.fillRect(rect, self.backgroundColor)
+    PtUtil.fillRect(self.CanvasObj, rect, self.backgroundColor)
   end
 
   if self.selected then
@@ -1921,11 +1931,11 @@ function CheckBox:drawCheck(dt)
   local startY = self.y + self.offset[2]
   local w = self.width
   local h = self.height
-  PtUtil.drawLine(
+  PtUtil.drawLine(self.CanvasObj, 
     {startX + w / 4, startY + w / 2},
     {startX + w / 3, startY + h / 4},
     self.checkColor, 1)
-  PtUtil.drawLine(
+  PtUtil.drawLine(self.CanvasObj, 
     {startX + w / 3, startY + h / 4},
     {startX + 3 * w / 4, startY + 3 * h / 4},
     self.checkColor, 1)
@@ -1957,7 +1967,7 @@ function RadioButton:drawCheck(dt)
   local h = self.height
   local checkRect = {startX + w / 4, startY + h / 4,
                      startX + 3 * w / 4, startY + 3 * h / 4}
-  PtUtil.fillRect(checkRect, self.checkColor)
+  PtUtil.fillRect(self.CanvasObj, checkRect, self.checkColor)
 end
 
 function RadioButton:select()
@@ -2043,14 +2053,14 @@ TextRadioButton.text = nil
 TextRadioButton.textPadding = 2
 
 
-function TextRadioButton:_init(x, y, width, height, text)
-  RadioButton._init(self, x, y, 0)
+function TextRadioButton:_init(CanvasObj, x, y, width, height, text)
+  RadioButton._init(self, CanvasObj, x, y, 0)
   self.width = width
   self.height = height
   
   local padding = self.textPadding
   local fontSize = height - padding * 2
-  local label = Label(0, padding, text, fontSize, fontColor)
+  local label = Label(CanvasObj, 0, padding, text, fontSize, fontColor)
   
   self.label = label
   self:add(label)
@@ -2074,7 +2084,7 @@ function TextRadioButton:drawCheck(dt)
   local h = self.height
   local checkRect = {startX + 1, startY + 1,
                      startX + w - 1, startY + h - 1}
-  PtUtil.fillRect(checkRect, self.checkColor)
+  PtUtil.fillRect(self.CanvasObj, checkRect, self.checkColor)
 end
 
 TextRadioButton.repositionLabel = TextButton.repositionLabel
@@ -2097,8 +2107,9 @@ Slider.maxValue = nil
 Slider.minValue = nil
 
 
-function Slider:_init(x, y, width, height, min, max, step, vertical)
+function Slider:_init(CanvasObj, x, y, width, height, min, max, step, vertical)
   Component._init(self)
+  self.CanvasObj = CanvasObj
   self.x = x
   self.y = y
   self.width = width
@@ -2191,11 +2202,11 @@ function Slider:draw(dt)
   local handleBorderRect
   local handleRect
   if self.vertical then
-    PtUtil.drawLine({startX + w / 2, startY},
+    PtUtil.drawLine(self.CanvasObj, {startX + w / 2, startY},
       {startX + w / 2, startY + h}, lineColor, lineSize)
-    PtUtil.drawLine({startX, startY + lineSize / 2}
+    PtUtil.drawLine(self.CanvasObj, {startX, startY + lineSize / 2}
       , {startX + w, startY + lineSize / 2}, lineColor, lineSize)
-    PtUtil.drawLine({startX, startY + h - lineSize / 2}
+    PtUtil.drawLine(self.CanvasObj, {startX, startY + h - lineSize / 2}
       , {startX + w, startY + h - lineSize / 2}, lineColor, lineSize)
       
     slidableLength = h - lineSize * 2 - handleSize
@@ -2205,11 +2216,11 @@ function Slider:draw(dt)
                   , startX + w - handleBorderSize
                   , sliderY + handleSize - handleBorderSize}
   else
-    PtUtil.drawLine({startX, startY + h / 2},
+    PtUtil.drawLine(self.CanvasObj, {startX, startY + h / 2},
       {startX + w, startY + h / 2}, self.lineColor, self.lineSize)
-    PtUtil.drawLine({startX + lineSize / 2, startY},
+    PtUtil.drawLine(self.CanvasObj, {startX + lineSize / 2, startY},
       {startX + lineSize / 2, startY + h}, lineColor, lineSize)
-    PtUtil.drawLine({startX + w - lineSize / 2, startY},
+    PtUtil.drawLine(self.CanvasObj, {startX + w - lineSize / 2, startY},
       {startX + w - lineSize / 2, startY + h}, lineColor, lineSize)
     
     slidableLength = w - lineSize * 2 - handleSize
@@ -2219,7 +2230,7 @@ function Slider:draw(dt)
                   , sliderX + handleSize - handleBorderSize
                   , startY + h - handleBorderSize}
   end
-  PtUtil.drawRect(handleBorderRect, self.handleBorderColor, handleBorderSize)
+  PtUtil.drawRect(self.CanvasObj, handleBorderRect, self.handleBorderColor, handleBorderSize)
   local handleColor
   if self.dragging then
     handleColor = self.handlePressedColor
@@ -2228,7 +2239,7 @@ function Slider:draw(dt)
   else
     handleColor = self.handleColor
   end
-  PtUtil.fillRect(handleRect, handleColor)
+  PtUtil.fillRect(self.CanvasObj, handleRect, handleColor)
 end
 
 function Slider:getPercentage()
@@ -2313,8 +2324,9 @@ List.itemPadding = 2
 List.scrollBarSize = 3
 
 
-function List:_init(x, y, width, height, itemSize, itemFactory, horizontal)
+function List:_init(CanvasObj, x, y, width, height, itemSize, itemFactory, horizontal)
   Component._init(self)
+  self.CanvasObj = CanvasObj
   self.x = x
   self.y = y
   self.width = width
@@ -2373,16 +2385,16 @@ function List:draw(dt)
   local borderColor = self.borderColor
   local borderRect = {startX, startY, startX + w, startY + h}
   local rect = {startX + 1, startY + 1, startX + w - 1, startY + h - 1}
-  PtUtil.drawRect(borderRect, borderColor, borderSize)
-  PtUtil.fillRect(rect, self.backgroundColor)
+  PtUtil.drawRect(self.CanvasObj, borderRect, borderColor, borderSize)
+  PtUtil.fillRect(self.CanvasObj, rect, self.backgroundColor)
 
   local scrollBarSize = self.scrollBarSize
   if self.horizontal then
     local lineY = startY + borderSize + scrollBarSize + 1.5
-    PtUtil.drawLine({startX, lineY}, {startX + w, lineY}, borderColor, 1)
+    PtUtil.drawLine(self.CanvasObj, {startX, lineY}, {startX + w, lineY}, borderColor, 1)
   else
     local lineX = startX + w - borderSize - scrollBarSize - 1.5
-    PtUtil.drawLine({lineX, startY}, {lineX, startY + h}, borderColor, 1)
+    PtUtil.drawLine(self.CanvasObj, {lineX, startY}, {lineX, startY + h}, borderColor, 1)
   end
 end
 
@@ -2400,7 +2412,7 @@ function List:emplaceItem(...)
                             + self.scrollBarSize + 2)
     height = self.itemSize
   end
-  item = self.itemFactory(0, 0, width, height, ...)
+  item = self.itemFactory(self.CanvasObj,0, 0, width, height, ...)
   return self:addItem(item)
 end
 

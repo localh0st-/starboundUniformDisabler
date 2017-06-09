@@ -24,8 +24,8 @@ end
 
 PortraitTextBoxCheck = class(TextBoxCheck)
 -- adds boxes with crew portraits to the left
-function PortraitTextBoxCheck:_init(x, y, width, height, text, drawable, maxtextheight)
-  RadioButton._init(self, x, y, 0)
+function PortraitTextBoxCheck:_init(CanvasObj, x, y, width, height, text, drawable, maxtextheight)
+  RadioButton._init(self, CanvasObj, x, y, 0)
   self.width = width
   self.textheight = maxtextheight
   self.height = height
@@ -35,11 +35,11 @@ function PortraitTextBoxCheck:_init(x, y, width, height, text, drawable, maxtext
   -- edit this to make thge image
   local portrait = Panel(0,0)
   for index,part in pairs(drawable) do
-    local hello=Image(0,0,part.image,0.65)
+    local hello=Image(self.CanvasObj,0,0,part.image,0.65)
     portrait:add(hello)
 	self.imageWidth = math.max(self.imageWidth, hello.width)
   end
-  local label = Label(self.imageWidth, padding, text, fontSize, fontColor)
+  local label = Label(CanvasObj, self.imageWidth, padding, text, fontSize, fontColor)
   self.label = label
   self.portrait = portrait
   self:add(label)
@@ -63,7 +63,7 @@ function PortraitTextBoxCheck:drawCheck(dt)
   local h = self.height
   local checkRect = {startX + 1, startY + 1,
                      startX + w - 1, startY + h - 1}
-  PtUtil.fillRect(checkRect, self.checkColor)
+  PtUtil.fillRect(self.CanvasObj, checkRect, self.checkColor)
 end
 
 -- postion the elements of the item
@@ -94,8 +94,9 @@ PaginatedList = class(List)
 
 --may add a page counter later but not for now
 
-function PaginatedList:_init(x, y, width, height, itemSize, itemFactory, horizontal)
+function PaginatedList:_init(CanvasObj, x, y, width, height, itemSize, itemFactory, horizontal)
   Component._init(self)
+  self.CanvasObj = CanvasObj
   self.x = x
   self.y = y
   self.width = width
@@ -125,8 +126,8 @@ function PaginatedList:draw(dt)
   local borderColor = self.borderColor
   local borderRect = {startX, startY, startX + w, startY + h}
   local rect = {startX + 1, startY + 1, startX + w - 1, startY + h - 1}
-  PtUtil.drawRect(borderRect, borderColor, borderSize)
-  PtUtil.fillRect(rect, self.backgroundColor)
+  PtUtil.drawRect(self.CanvasObj, borderRect, borderColor, borderSize)
+  PtUtil.fillRect(self.CanvasObj, rect, self.backgroundColor)
 
 
 end
@@ -147,7 +148,7 @@ function PaginatedList:emplaceItem(...)
                              )
     height = self.itemSize
   end
-  item = self.itemFactory(0, 0, width, height, ...)
+  item = self.itemFactory(self.CanvasObj, 0, 0, width, height, ...)
   return self:addItem(item)
 end
 
@@ -232,12 +233,13 @@ end
 
 ImageButton = class(Button)
 
-function ImageButton:_init(x, y,imagePath,scale)
+function ImageButton:_init(CanvasObj, x, y,imagePath,scale)
   --world.logInfo("Button init with "..x..","..y..","..width..","..height..".")
 
   Component._init(self)
   self.mouseOver = false
   self.scale = scale
+  self.CanvasObj = CanvasObj
   self.x = x
   self.y = y
   self.imagePath = imagePath
@@ -260,16 +262,16 @@ function ImageButton:draw(dt)
   local imagePath = self.imagePath
   local scale = self.scale
   
-  PtUtil.drawImage(imagePath, {startX, startY}, scale)
+  PtUtil.drawImage(self.CanvasObj, imagePath, {startX, startY}, scale)
 end
 
 CustomTextButton = class(TextButton)
 
-function CustomTextButton:_init(x, y, width, height, text, fontColor,maxtextheight)
-  Button._init(self, x, y, width, height)
+function CustomTextButton:_init(CanvasObj, x, y, width, height, text, fontColor,maxtextheight)
+  Button._init(self, CanvasObj, x, y, width, height)
   local padding = self.textPadding
   local fontSize = maxtextheight or height - padding * 2
-  local label = Label(0, padding, text, fontSize, fontColor)
+  local label = Label(CanvasObj, 0, padding, text, fontSize, fontColor)
   self.text = text
   self.maxtextheight = maxtextheight
   

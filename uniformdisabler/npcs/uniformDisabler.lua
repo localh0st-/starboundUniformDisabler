@@ -1,4 +1,6 @@
 require("/npcs/jobOffersCompat.lua")
+
+tenant.UDsetNpcType = tenant.setNpcType
 function tenant.setNpcType(npcType)
   if npc.npcType() == npcType then return end
 
@@ -8,39 +10,18 @@ function tenant.setNpcType(npcType)
     storage.itemSlots.headCosmetic = npc.getItemSlot("headCosmetic")
   end
   if not storage.itemSlots.head then
-    storage.itemSlots.head = npc.getItemSlot("head")
+    storage.itemSlots.head = (npc.getItemSlot("head") or "")
   end
   
-  storage.itemSlots.head = (npc.getItemSlot("head") or "")
+  
   storage.itemSlots.chest = (npc.getItemSlot("chest") or "")
   storage.itemSlots.legs = (npc.getItemSlot("legs") or "")
   storage.itemSlots.back = (npc.getItemSlot("back") or "")
 
-  storage.itemSlots.primary = nil
-  storage.itemSlots.alt = nil
+
   storage.original=storage.itemSlots
-  local newUniqueId = sb.makeUuid()
-  local newEntityId = world.spawnNpc(entity.position(), npc.species(), npcType, npc.level(), npc.seed(), {
-    identity = npc.humanoidIdentity(),
-    scriptConfig = {
-        personality = personality(),
-        initialStorage = preservedStorage(),
-      	uniqueId = newUniqueId
-      }
-  })
 
-  if storage.respawner then
-  assert(newUniqueId and newEntityId)
-  world.callScriptedEntity(newEntityId, "tenant.setHome", storage.homePosition, storage.homeBoundary, storage.respawner, true)
-
-  local spawnerId = world.loadUniqueEntity(storage.respawner)
-  assert(spawnerId and world.entityExists(spawnerId))
-  world.callScriptedEntity(spawnerId, "replaceTenant", entity.uniqueId(), {
-      uniqueId = newUniqueId,
-      type = npcType
-    })
-  end
-  tenant.despawn(false)
+  tenant.UDsetNpcType(npcType) 
 
   local function usingJobOffers(module)
     require(module)

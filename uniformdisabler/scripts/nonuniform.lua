@@ -30,7 +30,6 @@ function init()
   out = world.sendEntityMessage(pid,"recruits.test")
   -- checks if promise was finished and if it was then will add each emeber of the crew to the list as an item and each item is also given all of the recruits data so it can be accesed later
 
- 
   
   greeting = Label(NUCanvas, xlistpadding+7, buttonleft.height+listystart+8,"Hello, my captain. What would you like the crew to wear? \nYour outfit, a sanctioned uniform, or pherhaps \nthey could wear the clothes they brought with them.", 8)
   
@@ -129,6 +128,11 @@ end
 		end
 	  end
 	end
+	--if not UNSC then
+		--this will only run once
+	    --script.setUpdateDelta(10)
+	--end
+   NUCanvas:clear() --very important to add, prevents performance drop from over drawing
    GUI.step(NUCanvas,dt)
  end
 

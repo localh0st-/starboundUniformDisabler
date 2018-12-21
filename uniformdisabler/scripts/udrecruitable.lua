@@ -8,12 +8,48 @@ function recruitable.init()
   message.setHandler("recruit.shipClothes", simpleHandler(recruitable.shipClothes))
   message.setHandler("recruit.getportrait", simpleHandler(recruitable.riolu))
 end
+
+-- creates a table of slots with the option of accepting ones that are modded in later
+function recruitable.getUniformSlots() 
+  local uniformSlots = config.getParameter("crew.uniformSlots")
+  local slots ={"legs","chest","head","back","headCosmetic","chestCosmetic","legsCosmetic","backCosmetic"}
+  for _,slot in pairs(slots) do
+    for j,uSlot in pairs(uniformSlots) do
+	  if uSlot == slot then
+	    uniformSlots[j] = nil
+	    break
+	  end
+	end
+  end
+  if uniformSlots then
+    for _,slot in pairs(uniformSlots)do
+	  table.insert(slots,slot)
+	end
+  end
+  return slots
+end
+
+-- checks for existance of original clothing and if none exists creates the proper storage
+function recruitable.originalCheck()
+
+  if not storage.original then
+    storage.original ={}
+    local uniformSlots = {legs = {base = "legs",cosmetic = "legsCosmetic"}, chest = {base = "chest",cosmetic = "chestCosmetic"},back = {base = "back",cosmetic = "backCosmetic"},head = {base = "head",cosmetic = "headCosmetic"}}
+	for slot,_ in pairs(uniformSlots)do
+	  if not storage.original[slot] then
+	    storage.original[slot] = npc.getItemSlot(uniformSlots[slot]["cosmetic"]) or npc.getItemSlot(uniformSlots[slot]["base"]) or ""
+	  end
+	end
+  end
+end
+
 -- adds the player id to the list of parameters being passed to the tailor
 oldrecruitinteract=recruitable.interact
 function recruitable.interact(sourceEntityId)
-   oldOut = oldrecruitinteract(sourceEntityId)
+  local oldOut = oldrecruitinteract(sourceEntityId)
   local sourceUniqueId = world.entityUniqueId(sourceEntityId)
-  if world.npcType(entity.id()) == "crewmembertailor" then
+  local crewType = world.npcType(entity.id())
+  if crewType == "crewmembertailor" or crewType == "crewmemberalliancetailor" or crewType == "crewmemberalliancetailor-aegi" or crewType == "crewmemberaegitailor" then
     oldOut[2]["passed"] = sourceUniqueId
 	  --sb.logWarn("%s","interaction changed")
 	return oldOut
@@ -22,30 +58,23 @@ function recruitable.interact(sourceEntityId)
   end
 end
 
---rewrites the opld vanila function so tha the uniform will no longer be contantly asigning
+--rewrites the old vanila function so tha the uniform will no longer be contantly asigning
 function recruitable.setUniform(uniform)
-  storage.crewUniform = uniform
 
-  local uniformSlots = config.getParameter("crew.uniformSlots")
-  if not uniform then
-    uniform = {
-      slots = uniformSlots,
-      items = config.getParameter("crew.defaultUniform")
-    }
-  end
+
+
 
   recruitable.portraitChanged = true
 end
 
 --same as set uniform function but it keeps the original colors
 function recruitable.udsetClothes(uniform)
-  storage.crewUniform = uniform
 
-  local uniformSlots = config.getParameter("crew.uniformSlots")
-  uniformSlots[#uniformSlots+1],uniformSlots[#uniformSlots+2]='head','headCosmetic'
+
+  local uniformSlots = recruitable.getUniformSlots() 
   if not uniform then
     uniform = {
-      slots = uniformSlots,
+      slots = config.getParameter("crew.uniformSlots"),
       items = config.getParameter("crew.defaultUniform")
     }
   end
@@ -60,9 +89,9 @@ end
 function recruitable.udsetUniform(uniform)
   storage.crewUniform = uniform
 
-  local uniformSlots = config.getParameter("crew.uniformSlots")
-  -- head slot is added both here and in playr.config becasue for some reason they have the crew uniform defined in 2 diffenrent places and call on both of them in differnt functions
-  uniformSlots[#uniformSlots+1],uniformSlots[#uniformSlots+2]='head','headCosmetic'
+  local uniformSlots = recruitable.getUniformSlots()
+
+
   if not uniform then
     uniform = {
       slots = uniformSlots,
@@ -78,9 +107,7 @@ function recruitable.udsetUniform(uniform)
 end
 -- the function that is called when the crew is told to change their clothes to a specific outfit
 function recruitable.forcedClothes(pid, puni)
-	if not storage.original then
-	  storage.original = deepcopy(storage["itemSlots"])
-	end
+    recruitable.originalCheck()
     if puni then
 	    recruitable.udsetClothes(puni)
     end
@@ -93,15 +120,15 @@ function recruitable.homeClothes(pid)
     for slot,item in pairs(storage.original) do
 	  setNpcItemSlot(slot,item)
 	end
+  else
+    recruitable.originalCheck()
   end
   recruitable.portraitChanged = true
   world.sendEntityMessage(pid,"recruits.savetime")
 end
 --the function that is called when the crew is told to cahnge to the ship uniform
 function recruitable.shipClothes(pid)
-  if not storage.original then
-	storage.original = deepcopy(storage["itemSlots"])
-  end
+  recruitable.originalCheck()
   recruitable.udsetUniform(nil)
   recruitable.portraitChanged = true
   world.sendEntityMessage(pid,"recruits.savetime")

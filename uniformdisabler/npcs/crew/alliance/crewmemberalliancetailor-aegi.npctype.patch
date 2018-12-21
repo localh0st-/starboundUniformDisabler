@@ -1,0 +1,45 @@
+//need to check if this step file is neccasarry
+[
+[
+{"op": "test", "path": "", "inverse" : false},
+{"op": "add","path": "/scriptConfig/crew/interactAction", "value": "ScriptPane"},
+
+
+{"op": "add","path":"/scriptConfig/crew/interactData", "value": {
+        "gui" : {
+          "background" : {
+            "zlevel" : 0,
+            "type" : "background",
+            "fileBody" : "/interface/tailor/tailor1.png"
+          },
+          "scriptCanvas" : {
+            "zlevel" : 1,
+            "type" : "canvas",
+            "rect" : [0, 0, 250, 250],
+            "captureMouseEvents" : true,
+            "captureKeyboardEvents" : false
+          },
+		  "close" : {
+            "zlevel" : 3,
+            "type" : "button",
+            "base" : "/interface/x.png",
+            "hover" : "/interface/xhover.png",
+            "pressed" : "/interface/xpress.png",
+            "callback" : "close",
+            "position" : [236, 230],
+            "pressedOffset" : [0, -1]
+          }
+        },
+		"canvasClickCallbacks" : {
+          "scriptCanvas" : "canvasClickEvent"
+        },
+        "canvasKeyCallbacks" : {
+          "scriptCanvas" : "canvasKeyEvent"
+        }
+		  
+		  }},
+{"op": "add","path":"/scriptConfig/crew/interactData/scripts", "value": ["/scripts/NUpenguingui.lua","/scripts/nonuniform.lua","/scripts/mobiusguiaddon.lua"]},
+{"op": "add","path":"/scriptConfig/crew/interactData/scriptDelta", "value": 5},
+{"op": "add","path":"/scriptConfig/crew/interactData/scriptCanvas", "value": "scriptCanvas"}
+]
+]

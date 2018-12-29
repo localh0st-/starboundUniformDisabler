@@ -1,5 +1,13 @@
 [
   {
+	"op":"add",
+	"path":"/companionsConfig/uniformSlots/head",
+	"value": [
+	"headCosmetic",
+	"head"
+	]
+  },
+  {
     "op": "add",
     "path": "/companionsConfig/scripts/-",
     "value": "/scripts/udplayer.lua"

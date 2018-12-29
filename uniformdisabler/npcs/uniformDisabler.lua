@@ -1,46 +1,47 @@
 require("/npcs/jobOffersCompat.lua")
+
+tenant.UDsetNpcType = tenant.setNpcType
 function tenant.setNpcType(npcType)
   if npc.npcType() == npcType then return end
 
   npc.resetLounging()
   storage.itemSlots = storage.itemSlots or {}
-  if not storage.itemSlots.headCosmetic and not storage.itemSlots.headCosmetic then
+  -- checks for any cosmentic items
+  if not storage.itemSlots.headCosmetic then
     storage.itemSlots.headCosmetic = npc.getItemSlot("headCosmetic")
   end
-  if not storage.itemSlots.head then
-    storage.itemSlots.head = npc.getItemSlot("head")
+  if not storage.itemSlots.chestCosmetic then
+    storage.itemSlots.chestCosmetic = npc.getItemSlot("chestCosmetic")
+  end
+  if not storage.itemSlots.legsCosmetic then
+    storage.itemSlots.legsCosmetic = npc.getItemSlot("legsCosmetic")
+  end
+  if not storage.itemSlots.backCosmetic then
+    storage.itemSlots.backCosmetic = npc.getItemSlot("backCosmetic")
+  end
+  -- checks for normal items if no items are found and if none are found an empty string is passed so that no items will be assigned
+  if not storage.itemSlots.head or storage.itemSlots.headCosmetic then
+    storage.itemSlots.head = (deepcopy(storage.itemSlots.headCosmetic) or npc.getItemSlot("head") or "")
+	storage.itemSlots.headCosmetic = nil
+  end
+  if not storage.itemSlots.chest or storage.itemSlots.chestCosmetic then
+    storage.itemSlots.chest = (deepcopy(storage.itemSlots.chestCosmetic) or npc.getItemSlot("chest") or "")
+	storage.itemSlots.chestCosmetic = nil
+  end
+  if not storage.itemSlots.legs or storage.itemSlots.legsCosmetic then
+    storage.itemSlots.legs = (deepcopy(storage.itemSlots.legsCosmetic) or npc.getItemSlot("legs") or "")
+	storage.itemSlots.legsCosmetic = nil
+  end
+  if not storage.itemSlots.back or storage.itemSlots.backCosmetic then
+    storage.itemSlots.back = (deepcopy(storage.itemSlots.backCosmetic) or npc.getItemSlot("back") or "")
+	storage.itemSlots.backCosmetic = nil
   end
   
-  storage.itemSlots.head = (npc.getItemSlot("head") or "")
-  storage.itemSlots.chest = (npc.getItemSlot("chest") or "")
-  storage.itemSlots.legs = (npc.getItemSlot("legs") or "")
-  storage.itemSlots.back = (npc.getItemSlot("back") or "")
 
-  storage.itemSlots.primary = nil
-  storage.itemSlots.alt = nil
+
   storage.original=storage.itemSlots
-  local newUniqueId = sb.makeUuid()
-  local newEntityId = world.spawnNpc(entity.position(), npc.species(), npcType, npc.level(), npc.seed(), {
-    identity = npc.humanoidIdentity(),
-    scriptConfig = {
-        personality = personality(),
-        initialStorage = preservedStorage(),
-      	uniqueId = newUniqueId
-      }
-  })
 
-  if storage.respawner then
-  assert(newUniqueId and newEntityId)
-  world.callScriptedEntity(newEntityId, "tenant.setHome", storage.homePosition, storage.homeBoundary, storage.respawner, true)
-
-  local spawnerId = world.loadUniqueEntity(storage.respawner)
-  assert(spawnerId and world.entityExists(spawnerId))
-  world.callScriptedEntity(spawnerId, "replaceTenant", entity.uniqueId(), {
-      uniqueId = newUniqueId,
-      type = npcType
-    })
-  end
-  tenant.despawn(false)
+  tenant.UDsetNpcType(npcType) 
 
   local function usingJobOffers(module)
     require(module)
@@ -52,3 +53,18 @@ function tenant.setNpcType(npcType)
   end
 end
 
+-- function to actually copy and not just pointers
+function deepcopy(orig)
+    local orig_type = type(orig)
+    local copy
+    if orig_type == 'table' then
+        copy = {}
+        for orig_key, orig_value in next, orig, nil do
+            copy[deepcopy(orig_key)] = deepcopy(orig_value)
+        end
+        setmetatable(copy, deepcopy(getmetatable(orig)))
+    else -- number, string, boolean, etc
+        copy = orig
+    end
+    return copy
+end

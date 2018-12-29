@@ -58,7 +58,8 @@ function recruitable.interact(sourceEntityId)
   end
 end
 
---rewrites the old vanila function so tha the uniform will no longer be contantly asigning
+--rewrites the old vanila function so tha the uniform will no longer be contantly asigning and renames the orignal function for later use
+recruitable.udsetUniform = recruitable.setUniform
 function recruitable.setUniform(uniform)
 
 
@@ -85,26 +86,7 @@ function recruitable.udsetClothes(uniform)
   end
   recruitable.portraitChanged = true
 end
--- the original setuniform function it is used to assign the uniforms when desired
-function recruitable.udsetUniform(uniform)
-  storage.crewUniform = uniform
 
-  local uniformSlots = recruitable.getUniformSlots()
-
-
-  if not uniform then
-    uniform = {
-      slots = uniformSlots,
-      items = config.getParameter("crew.defaultUniform")
-    }
-  end
-  for _, slotName in pairs(uniform.slots) do
-    if contains(uniformSlots, slotName) then
-      setNpcItemSlot(slotName, recruitable.dyeUniformItem(uniform.items[slotName]))
-    end
-  end
-  recruitable.portraitChanged = true
-end
 -- the function that is called when the crew is told to change their clothes to a specific outfit
 function recruitable.forcedClothes(pid, puni)
     recruitable.originalCheck()
